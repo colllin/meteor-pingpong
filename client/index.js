@@ -305,6 +305,25 @@ Template.selectUser.events({
 });
 
 
+Template.leaderboard.leaders = function() {
+    // return Matches.aggregate({
+    //     $group: {
+    //         _id: '$winner_id',
+    //         wins: {$sum: 1}
+    //     }
+    // });//, {sort: {wins: -1}});
+    return WinCounts.find({}, {sort: {wins: -1}}).fetch();
+};
+Template.leaderboardUser.username = function() {
+    return Meteor.users.findOne(this._id).username;
+};
+Template.leaderboardUser.metricValue = function() {
+    return Matches.find({winner_id: this._id}).count();
+};
+Template.leaderboardUser.metricName = function() {
+    return 'wins';
+};
+
 
 // Template.leaderboard.players = function() {
 //     var selectedSort = Session.get('sort_by') || 'score';

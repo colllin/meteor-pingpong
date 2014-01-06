@@ -6,6 +6,7 @@
     "modernizr-meteor": {},
     "iron-router": {},
     "bootstrap-datepicker2": {},
-    "profile": {}
+    "profile": {},
+    "mongodb-server-aggregation": {}
   }
 }

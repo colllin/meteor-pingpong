@@ -22,6 +22,9 @@
       },
       "profile": {
         "version": "0.0.5"
+      },
+      "mongodb-server-aggregation": {
+        "version": "1.0.3"
       }
     },
     "packages": {
@@ -59,6 +62,11 @@
         "git": "https://github.com/BeDifferential/meteor-profile.git",
         "tag": "v0.0.5",
         "commit": "997cb5e3834893b8ff5097f6c0d41317628b2c90"
+      },
+      "mongodb-server-aggregation": {
+        "git": "https://github.com/zvictor/meteor-mongo-server.git",
+        "tag": "v1.0.3",
+        "commit": "416293e383f53e2506f1b7a1a7687390cbaf0e68"
       }
     }
   }

@@ -1,5 +1,5 @@
 <head>
-  <title>pingpong</title>
+  <title>rematch</title>
 </head>
 
 <body>
@@ -7,7 +7,7 @@
 
 <template name="layout">
 	<header>
-		Rematch.cc
+		rematch
 	</header>
 
 	{{yield}}
@@ -53,6 +53,20 @@
 	</div>
 </template>
 
+<template name="feedMatch">
+    <div style="background:transparent; border-bottom:2px dashed; padding: 20px 0; font-size: 20px;">
+
+        @{{winnerName}} crushed @{{loserName}}
+        <strong class="pull-right">
+            {{winner_score}}&ndash;{{loser_score}}
+        </strong>
+
+        <br>
+        <span class="js-time-ago text-muted" title="{{calendar}}" data-livestampp="{{iso_date}}">{{calendar}}</span>
+
+    </div>
+</template>
+
 <template name="leaderboard">
 	<div class="container">
 
@@ -70,23 +84,22 @@
 					</small>
 				</h1>
 
-				<h2>Coming Soon!</h2>
+				{{#each leaders}}
+					{{> leaderboardUser}}
+				{{/each}}
 
 			</div>
 		</div>
 	</div>
 </template>
 
-<template name="feedMatch">
+<template name="leaderboardUser">
     <div style="background:transparent; border-bottom:2px dashed; padding: 20px 0; font-size: 20px;">
 
-        @{{winnerName}} crushed @{{loserName}}
+        @{{username}}
         <strong class="pull-right">
-            {{winner_score}}&ndash;{{loser_score}}
+            {{metricValue}} {{metricName}}
         </strong>
-
-        <br>
-        <span class="js-time-ago text-muted" title="{{calendar}}" data-livestampp="{{iso_date}}">{{calendar}}</span>
 
     </div>
 </template>
