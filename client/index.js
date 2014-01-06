@@ -318,7 +318,7 @@ Template.leaderboardUser.username = function() {
     return Meteor.users.findOne(this._id).username;
 };
 Template.leaderboardUser.metricValue = function() {
-    return Matches.find({winner_id: this._id}).count();
+    return this.wins;
 };
 Template.leaderboardUser.metricName = function() {
     return 'wins';

@@ -23,13 +23,14 @@ Meteor.publish('wins-by-user', function() {
     //     }
     // }];
 
-	var matchWinsByUser = Matches.aggregate(aggregationQuery);
-	_(matchWinsByUser).each(_.bind(function(aggregation) {
-		this.added('win-counts', aggregation._id, aggregation);
-	}, this));
+	// var matchWinsByUser = Matches.aggregate(aggregationQuery);
+	// _(matchWinsByUser).each(_.bind(function(aggregation) {
+	// 	this.added('win-counts', aggregation._id, aggregation);
+	// }, this));
+	// initializing = false;
+	// this.ready();
 
-	initializing = false;
-	this.ready();
+	var matchWinsByUser = [];
 
 	var addWin = _.bind(function(document) {
 		var existingAggregation = _(matchWinsByUser).findWhere({_id: document.winner_id});
@@ -95,8 +96,8 @@ Meteor.publish('wins-by-user', function() {
 
 	// Observe only returns after the initial added callbacks have
 	// run.  Now mark the subscription as ready.
-	// initializing = false;
-	// this.ready();
+	initializing = false;
+	this.ready();
 
 	// Stop observing the cursor when client unsubs.
 	// Stopping a subscription automatically takes
