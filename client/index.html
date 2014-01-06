@@ -1,0 +1,196 @@
+<head>
+  <title>pingpong</title>
+</head>
+
+<body>
+</body>
+
+<template name="layout">
+	<header>
+		Rematch.cc
+	</header>
+
+	{{yield}}
+</template>
+
+<template name="feed">
+	<div class="container">
+
+<!--
+ 		<ul class="nav nav-tabs">
+			<li class="active"><a href="#activity" data-toggle="tab">Activity</a></li>
+			<li><a href="#leaderboard" data-toggle="tab">Leaders</a></li>
+		</ul>
+		<div class="tab-content">
+			<div id="activity" class="tab-pane active">
+			</div>
+			<div id="leaderboard" class="tab-pane">
+				Leaderboard here
+			</div>
+		</div>
+ -->
+
+	 	<div class="row">
+	 		<div class="col-sm-8 col-sm-offset-2">
+
+				<h1>
+					Feed
+					<small><a href="/leaderboard">Leaderboard</a></small>
+					<small class="pull-right">
+						{{#if currentUser}}
+							<a class="" href="/new">Record a Match</a>
+						{{/if}}
+						{{loginButtons align="right"}}
+					</small>
+				</h1>
+
+				{{#each matches}}
+				    {{> feedMatch}}
+				{{/each}}
+
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="leaderboard">
+	<div class="container">
+
+	 	<div class="row">
+	 		<div class="col-sm-8 col-sm-offset-2">
+
+				<h1>
+					Leaderboard
+					<small><a href="/">Feed</a></small>
+					<small class="pull-right">
+						{{#if currentUser}}
+							<a class="" href="/new">Record a Match</a>
+						{{/if}}
+						{{loginButtons align="right"}}
+					</small>
+				</h1>
+
+				<h2>Coming Soon!</h2>
+
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="feedMatch">
+    <div style="background:transparent; border-bottom:2px dashed; padding: 20px 0; font-size: 20px;">
+
+        @{{winnerName}} crushed @{{loserName}}
+        <strong class="pull-right">
+            {{winner_score}}&ndash;{{loser_score}}
+        </strong>
+
+        <br>
+        <span class="js-time-ago text-muted" title="{{calendar}}" data-livestampp="{{iso_date}}">{{calendar}}</span>
+
+    </div>
+</template>
+
+<template name="newMatch">
+	<div class="container">
+	 	<div class="row">
+	 		<div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
+
+		 		<form>
+		 			<h1>Record a Match</h1>
+
+					<p>
+						<label for="user-score">Your score?</label>
+						<input class="form-control input-lg" id="user-score" name="userScore" type="text" placeholder="10" autocomplete="off" value="{{userScore}}" reactive>
+					</p>
+
+					<p>
+						<label for="opponent">Your opponent?</label>
+						<input class="form-control input-lg" id="opponent" name="opponent" type="text" placeholder="username or email" value="{{opponentDisplayName}}">
+					</p>
+
+					<p>
+						<label for="opponent-score">Their score?</label>
+						<input class="form-control input-lg" id="opponent-score" name="opponentScore" type="text" placeholder="10" autocomplete="off" value="{{opponentScore}}" reactive>
+					</p>
+
+<!--
+					<div>
+						<label for="opponent-score">When?</label>
+						<input class="form-control input-lg" id="opponent-score" name="opponent-score" type="text" placeholder="0">
+					</div>
+-->
+
+					{{#isolate}}
+			            {{#if error}}
+			                <div class="alert alert-danger">{{error}}</div>
+			            {{/if}}
+		            {{/isolate}}
+
+					<input class="btn btn-primary btn-block btn-lg" type="submit" value="Save">
+					<!-- <input class="btn btn-danger btn-block btn-lg" type="reset" value="Clear"> -->
+					<a class="btn btn-default btn-block btn-lg" href="/" onclick="return window.Location && Location.back && Location.back() ? false : true;">Cancel</a>
+				</form>
+
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="selectUser">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
+
+				<div class="row">
+					<div class="col-xs-8">
+						<input name="search" type="text" placeholder="name, username, or email..." class="form-control">
+					</div>
+					<div class="col-xs-2 text-right">
+						<a href="javascript://" class="js-clear btn btn-link">clear</a>
+					</div>
+					<div class="col-xs-2 text-right">
+						<a href="javascript://" class="js-cancel btn btn-link">cancel</a>
+					</div>
+				</div>
+
+				<ul>
+					{{#if allowSelf}}
+						{{#with currentUser}}
+							<li>
+								<a href="javascript://" class="js-select-user" data-id="{{_id}}">
+									{{highlight username ..}}
+									<div class="label pull-right">You</div>
+								</a>
+							</li>
+						{{/with}}
+					{{/if}}
+					{{#each matchingUsers}}
+						<li>
+							<a href="javascript://" class="js-select-user" data-id="{{_id}}">
+								{{highlight username ..}}
+								{{#if relation}}
+									<div class="label pull-right">{{relation}}</div>
+								{{/if}}
+							</a>
+						</li>
+					{{/each}}
+				</ul>
+
+				{{#if allowInvite}}
+					<a href="" class="js-invite">Invite by email.</a>
+				{{/if}}
+
+			</div>
+		</div>
+	</div>
+</template>
+<template name="selectUserItem">
+</template>
+
+
+
+
+
+
+

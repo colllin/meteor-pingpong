@@ -1,0 +1,65 @@
+{
+  "meteor": {},
+  "dependencies": {
+    "basePackages": {
+      "moment": {
+        "version": "2.2.1"
+      },
+      "livestamp": {
+        "version": "1.1.2.1"
+      },
+      "bootstrap-3": {
+        "version": "0.3.7"
+      },
+      "modernizr-meteor": {
+        "version": "2.6.2"
+      },
+      "iron-router": {
+        "version": "0.6.1"
+      },
+      "bootstrap-datepicker2": {
+        "version": "1.2.0"
+      },
+      "profile": {
+        "version": "0.0.5"
+      }
+    },
+    "packages": {
+      "moment": {
+        "git": "https://github.com/acreeger/meteor-moment.git",
+        "tag": "v2.2.1",
+        "commit": "9ee12e714afe56b189f53076447b7b54f3012065"
+      },
+      "livestamp": {
+        "git": "https://github.com/colllin/meteor-livestamp.git",
+        "tag": "v1.1.2.1",
+        "commit": "070821be066925e5177daf1d3398c759c45b15b4"
+      },
+      "bootstrap-3": {
+        "git": "https://github.com/mangasocial/meteor-bootstrap-3.git",
+        "tag": "v0.3.7",
+        "commit": "5dd0d142c870647b910be80bc777b96f0dd45e5e"
+      },
+      "modernizr-meteor": {
+        "git": "https://github.com/ckir/modernizr-meteor.git",
+        "tag": "v2.6.2",
+        "commit": "391ca2a3beff3cd2b0e1099cb2d744b5a2e8a73e"
+      },
+      "iron-router": {
+        "git": "https://github.com/EventedMind/iron-router.git",
+        "tag": "v0.6.1",
+        "commit": "4e1ee0581d68bff422a915dacb0bd30eae10fe08"
+      },
+      "bootstrap-datepicker2": {
+        "git": "https://github.com/deepwell/meteor-bootstrap-datepicker.git",
+        "tag": "v1.2.0",
+        "commit": "b7de18a7cc651ea665cda75048663f90d1a11d10"
+      },
+      "profile": {
+        "git": "https://github.com/BeDifferential/meteor-profile.git",
+        "tag": "v0.0.5",
+        "commit": "997cb5e3834893b8ff5097f6c0d41317628b2c90"
+      }
+    }
+  }
+}
