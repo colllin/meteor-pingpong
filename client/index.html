@@ -7,7 +7,19 @@
 
 <template name="layout">
 	<header>
+		<span class="glyphicon glyphicon-search"></span>
 		rematch
+
+		<div class="pull-right">
+			{{#if currentUser}}
+				<a class="" href="/new">
+					<span class="glyphicon glyphicon-plus"></span>
+					Record a Match
+				</a>
+			{{/if}}
+
+			{{loginButtons align="right"}}
+		</div>
 	</header>
 
 	{{yield}}
@@ -21,12 +33,6 @@
 				<h1>
 					Feed
 					<small><a href="/leaderboard">Leaderboard</a></small>
-					<small class="pull-right">
-						{{#if currentUser}}
-							<a class="" href="/new">Record a Match</a>
-						{{/if}}
-						{{loginButtons align="right"}}
-					</small>
 				</h1>
 
 				{{#each matches}}
@@ -61,12 +67,6 @@
 				<h1>
 					Leaderboard
 					<small><a href="/">Feed</a></small>
-					<small class="pull-right">
-						{{#if currentUser}}
-							<a class="" href="/new">Record a Match</a>
-						{{/if}}
-						{{loginButtons align="right"}}
-					</small>
 				</h1>
 
 				{{#each leaders}}
