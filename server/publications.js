@@ -7,16 +7,16 @@ Meteor.publish('matches', function() {
 	return Matches.find({});
 });
 
-Meteor.publish('wins-by-user', function() {
+Meteor.publish('user-wins', function() {
 	// var self = this;
 	// check(roomId, String);
 	var initializing = true;
-	var aggregationQuery = [{
-        $group: {
-            _id: '$winner_id',
-            wins: {$sum: 1}
-        }
-    }];
+	// var aggregationQuery = [{
+ //        $group: {
+ //            _id: '$winner_id',
+ //            wins: {$sum: 1}
+ //        }
+ //    }];
     // , {
     //     $sort: {
     //     	wins: -1
@@ -31,67 +31,85 @@ Meteor.publish('wins-by-user', function() {
 	// this.ready();
 
 	var matchWinsByUser = [];
+	var aYearAgo = moment().utc().subtract({years: 1});
+	var aQuarterAgo = moment().utc().subtract({months: 3});
+	var aMonthAgo = moment().utc().subtract({months: 1});
 
 	var addWin = _.bind(function(document) {
-		var existingAggregation = _(matchWinsByUser).findWhere({_id: document.winner_id});
 
-		if (existingAggregation) {
+		var aggregation = _(matchWinsByUser).findWhere({_id: document.winner_id});
+		var isNewAggregation = false;
 
-			existingAggregation.wins++;
-			this.changed('win-counts', existingAggregation._id, existingAggregation);
-
-		} else {
-
-			var newAggregation = {_id: document.winner_id, wins: 1};
-			matchWinsByUser.push(newAggregation);
-			this.added('win-counts', newAggregation._id, newAggregation);
-
+		if (!aggregation) {
+			isNewAggregation = true;
+			aggregation = {
+				_id: document.winner_id,
+				wins: 0,
+				yearWins: 0,
+				quarterWins: 0,
+				monthWins: 0
+			};
+			matchWinsByUser.push(aggregation);
 		}
+
+		if (aMonthAgo.isBefore(document.date)) {
+			aggregation.monthWins++;
+			aggregation.quarterWins++;
+			aggregation.yearWins++;
+		} else if (aQuarterAgo.isBefore(document.date)) {
+			aggregation.quarterWins++;
+			aggregation.yearWins++;
+		} else if (aYearAgo.isBefore(document.date)) {
+			aggregation.yearWins++;
+		}
+		aggregation.wins++;
+
+		if (isNewAggregation) {
+			this.added('users', aggregation._id, aggregation);
+		} else {
+			this.changed('users', aggregation._id, aggregation);
+		}
+
 	}, this);
 	var subtractWin = _.bind(function(document) {
 		var existingAggregation = _(matchWinsByUser).findWhere({_id: document.winner_id});
 
-		if (existingAggregation) {
-
-			existingAggregation.wins--;
-			this.changed('win-counts', existingAggregation._id, existingAggregation);
-
-		} else {
-
+		if (!existingAggregation) {
 			// do nothing
 			// this probably indicates a bug if the code gets here
-
+			return;
 		}
+
+		if (aMonthAgo.isBefore(document.date)) {
+			existingAggregation.monthWins--;
+			existingAggregation.quarterWins--;
+			existingAggregation.yearWins--;
+		} else if (aQuarterAgo.isBefore(document.date)) {
+			existingAggregation.quarterWins--;
+			existingAggregation.yearWins--;
+		} else if (aYearAgo.isBefore(document.date)) {
+			existingAggregation.yearWins--;
+		}
+		existingAggregation.wins--;
+
+		this.changed('users', existingAggregation._id, existingAggregation);
+
 	}, this);
 
 	// wins depend on matches, so observe changes to the matches collection
     var handle = Matches.find({}).observe({
-		// addedAt: _.bind(function(document, atIndex, before) {
-		// 	usersByWins.splice(atIndex, 0, document);
-		// 	this.added('win-counts', document._id, document);
-		// }, this),
 		added: function(document) {
-			// aggregation = Matches.aggregate();
 			addWin(document);
 		},
-		// changedAt: function(newDocument, oldDocument, atIndex) {
-		// 	this.changed('win-counts', , );
-		// },
 		changed: function(newDocument, oldDocument) {
 			if (newDocument.winner_id == oldDocument.winner_id) return;
 
 			subtractWin(oldDocument);
 			addWin(newDocument);
 		},
-		// removedAt: _.bind(function(document, atIndex) {
-		// 	// usersByWins.splice(atIndex, 1);
-		// 	this.removed('win-counts', document._id);
-		// }, this),
 		removed: function(document) {
 			subtractWin(document);
 		}
-		// movedTo: function(document, fromIndex, toIndex, before) {
-		// }
 	});
 
 	// Observe only returns after the initial added callbacks have

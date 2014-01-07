@@ -248,30 +248,10 @@ Template.selectUser.created = function() {
 Template.selectUser.rendered = function() {
     this.find('input').focus();
 };
+
 Template.selectUser.preserve({
   'input[name]': function(node) { return node.name; }
 });
-Template.selectUser.matchingUsers = function() {
-    var opponentSearch = this.session.get('entry') || '';
-    if (!opponentSearch.length) return [];
-
-    var opponentQueries = [
-        {username: {$regex: opponentSearch, $options: 'i'}},
-        {'emails.address': opponentSearch.toLowerCase()},
-        {'profile.name': opponentSearch}
-    ];
-    return Meteor.users.find({$or: opponentQueries, _id: {$ne: Meteor.userId()}});
-};
-Template.selectUser.highlight = function(toHighlight, data) {
-    var entry = data.session.get('entry');
-    if (!entry || !entry.length) return toHighlight;
-
-    var regex = new RegExp(entry, 'i');
-    var match = regex.exec(toHighlight);
-    if (!match || !match.length) return toHighlight;
-
-    return new Handlebars.SafeString(toHighlight.substring(0, match.index) + '<mark>' + match[0] + '</mark>' + toHighlight.substring(match.index + match[0].length));
-};
 
 var updateUserSearchCache = function(template) {
     var entry = template.find('input').value;
@@ -304,19 +284,34 @@ Template.selectUser.events({
     }
 });
 
+Template.selectUser.matchingUsers = function() {
+    var opponentSearch = this.session.get('entry') || '';
+    if (!opponentSearch.length) return [];
+
+    var opponentQueries = [
+        {username: {$regex: opponentSearch, $options: 'i'}},
+        {'emails.address': opponentSearch.toLowerCase()},
+        {'profile.name': opponentSearch}
+    ];
+    return Meteor.users.find({$or: opponentQueries, _id: {$ne: Meteor.userId()}});
+};
+Template.selectUser.highlight = function(toHighlight, data) {
+    var entry = data.session.get('entry');
+    if (!entry || !entry.length) return toHighlight;
+
+    var regex = new RegExp(entry, 'i');
+    var match = regex.exec(toHighlight);
+    if (!match || !match.length) return toHighlight;
+
+    return new Handlebars.SafeString(toHighlight.substring(0, match.index) + '<mark>' + match[0] + '</mark>' + toHighlight.substring(match.index + match[0].length));
+};
+
+
 
 Template.leaderboard.leaders = function() {
-    // return Matches.aggregate({
-    //     $group: {
-    //         _id: '$winner_id',
-    //         wins: {$sum: 1}
-    //     }
-    // });//, {sort: {wins: -1}});
-    return WinCounts.find({}, {sort: {wins: -1}}).fetch();
+    return Meteor.users.find({}, {sort: {wins: -1}}).fetch();
 };
-Template.leaderboardUser.username = function() {
-    return Meteor.users.findOne(this._id).username;
-};
+
 Template.leaderboardUser.metricValue = function() {
     return this.wins;
 };
