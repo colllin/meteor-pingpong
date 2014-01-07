@@ -12,7 +12,7 @@ bootstrap-3
 modernizr-meteor
 iron-router
 bootstrap-datepicker2
-accounts-ui
 accounts-password
 profile
 mongodb-server-aggregation
+accounts-ui-bootstrap-3

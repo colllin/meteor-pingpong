@@ -6,21 +6,28 @@
 </body>
 
 <template name="layout">
-	<header>
-		<span class="glyphicon glyphicon-search"></span>
-		rematch
+	<nav class="navbar navbar-defaultt" role="navigation">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+			<span class="navbar-brand" href="/">
+				<span class="glyphicon glyphicon-search"></span>
+				rematch
+		    </span>
+		</div>
 
-		<div class="pull-right">
-			{{#if currentUser}}
-				<a class="" href="/new">
+		<ul class="nav navbar-nav navbar-right">
+			{{loginButtons align="right"}}
+		</ul>
+
+		{{#if currentUser}}
+			<div class="text-center">
+				<a class="btn navbar-btn btn-default" href="/new">
 					<span class="glyphicon glyphicon-plus"></span>
 					Record a Match
 				</a>
-			{{/if}}
-
-			{{loginButtons align="right"}}
-		</div>
-	</header>
+			</div>
+		{{/if}}
+	</nav>
 
 	{{yield}}
 </template>
