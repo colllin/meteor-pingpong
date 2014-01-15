@@ -334,15 +334,61 @@ Template.selectUser.highlight = function(toHighlight, data) {
 
 
 
+var metrics = [{
+    heading: 'Win Leaders',
+    userOrder: 'wins',
+    userValue: "this.wins + ' wins'"
+}, {
+    heading: 'Loss Leaders',
+    userOrder: 'losses',
+    userValue: "this.losses + ' losses'"
+}, {
+    heading: 'Record Leaders',
+    userOrder: 'winRatio',
+    userValue: "this.wins +'-'+ this.losses +' ('+ this.winRatio +')'"
+}];
+var getMetric = function(key) {
+    // return the best match, or return a default metric
+    return _(metrics).findWhere({userOrder: key}) || metrics[0];
+};
+var getMetricKey = function(metric) {
+    // userOrder is a decent unique key for now. might need to take ASC/DESC into account at some point
+    return metric.userOrder;
+};
 Template.leaderboard.leaders = function() {
+    var sort = {};
+    var metricKey = Session.get('leaderboardMetric');
+    var metric = getMetric(metricKey);
+    sort[metric.userOrder] = -1;
     return Meteor.users.find({}, {sort: {wins: -1}}).fetch();
 };
+Template.leaderboard.metrics = function() {
+    return metrics;
+};
+Session.setDefault('leaderboardMetric', getMetricKey(Template.leaderboard.metrics()[0]));
+Template.leaderboard.selectedMetricTitle = function() {
+    var metricKey = Session.get('leaderboardMetric');
+    var metric = getMetric(metricKey);
+    return metric.heading;
+};
+Template.leaderboard.maybeActiveMetricClass = function() {
+    return Session.get('leaderboardMetric') == getMetricKey(this) ? 'active' : '';
+};
+Template.leaderboard.metricKey = function() {
+    return getMetricKey(this);
+};
+Template.leaderboard.events({
+    'click .js-select-metric' : function(event) {
+        Session.set('leaderboardMetric', getMetricKey( getMetric( $(event.currentTarget).data('key') ) ));
+    }
+});
+
+
 
 Template.leaderboardUser.metricValue = function() {
-    return this.wins;
-};
-Template.leaderboardUser.metricName = function() {
-    return 'wins';
+    var metricKey = Session.get('leaderboardMetric');
+    var metric = getMetric(metricKey);
+    return eval(metric.userValue);
 };
 
 

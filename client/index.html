@@ -8,13 +8,14 @@
 <template name="layout">
 	<nav class="navbar navbar-defaultt" role="navigation">
 		<div class="navbar-headerr">
-			<span class="navbar-brand" href="/">
+			<a class="navbar-brand" href="/">
 				<span class="glyphicon glyphicon-search"></span>
 				rematch
-		    </span>
+		    </a>
 
 		    <!-- need .pull-right to keep it floated on mobile (< 768) -->
-			<ul class="nav navbar-nav navbar-right pull-right">
+		    <!-- need margin-right:0 to override navbar-right style when no user is signed in -->
+			<ul class="nav navbar-nav navbar-right pull-right" style="margin-right:0;">
 				{{loginButtons align="right"}}
 			</ul>
 
@@ -112,6 +113,24 @@
 					<small><a href="/">Feed</a></small>
 				</h1>
 
+				<div class="text-center">
+					<div class="btn-group dropdown">
+						<a href="javascript://" data-toggle="dropdown" class="btn btn-default">
+							{{selectedMetricTitle}}
+							<span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu text-left pull-right">
+							{{#each metrics}}
+								<li class="{{maybeActiveMetricClass}}">
+									<a href="javascript://" class="js-select-metric" data-key="{{metricKey}}">
+										{{heading}}
+									</a>
+								</li>
+							{{/each}}
+						</ul>
+					</div>
+				</div>
+
 				{{#each leaders}}
 					{{> leaderboardUser}}
 				{{/each}}
@@ -126,7 +145,7 @@
 
         @{{username}}
         <strong class="pull-right">
-            {{metricValue}} {{metricName}}
+            {{metricValue}}
         </strong>
 
     </div>

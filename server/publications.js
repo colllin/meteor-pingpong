@@ -73,19 +73,22 @@ Meteor.publish('user-stats', function() {
 		monthWinRatio: 1
 	};
 
+	var updateWinRatios = function(aggregation) {
+		aggregation.winRatio = aggregation.wins / aggregation.losses;
+		aggregation.yearWinRatio = aggregation.yearWins / aggregation.yearLosses;
+		aggregation.quarterWinRatio = aggregation.quarterWins / aggregation.quarterLosses;
+		aggregation.monthWinRatio = aggregation.monthWins / aggregation.monthLosses;
+	};
+
 	var addWin = _.bind(function(document) {
 		var aggregation = _(userStats).findWhere({_id: document.winner_id});
 		var isNewAggregation = false;
 
 		if (!aggregation) {
 			isNewAggregation = true;
-			aggregation = {
+			aggregation = _.extend({
 				_id: document.winner_id,
-				wins: 0,
-				yearWins: 0,
-				quarterWins: 0,
-				monthWins: 0
-			};
+			}, defaultAggregation);
 			userStats.push(aggregation);
 		}
 
@@ -100,6 +103,8 @@ Meteor.publish('user-stats', function() {
 			aggregation.yearWins++;
 		}
 		aggregation.wins++;
+
+		updateWinRatios(aggregation);
 
 		if (isNewAggregation) {
 			this.added('users', aggregation._id, aggregation);
@@ -128,6 +133,66 @@ Meteor.publish('user-stats', function() {
 		}
 		existingAggregation.wins--;
 
+		updateWinRatios(existingAggregation);
+
+		this.changed('users', existingAggregation._id, existingAggregation);
+	}, this);
+
+	var addLoss = _.bind(function(document) {
+		var aggregation = _(userStats).findWhere({_id: document.loser_id});
+		var isNewAggregation = false;
+
+		if (!aggregation) {
+			isNewAggregation = true;
+			aggregation = _.extend({
+				_id: document.loser_id,
+			}, defaultAggregation);
+			userStats.push(aggregation);
+		}
+
+		if (aMonthAgo.isBefore(document.date)) {
+			aggregation.monthLosses++;
+			aggregation.quarterLosses++;
+			aggregation.yearLosses++;
+		} else if (aQuarterAgo.isBefore(document.date)) {
+			aggregation.quarterLosses++;
+			aggregation.yearLosses++;
+		} else if (aYearAgo.isBefore(document.date)) {
+			aggregation.yearLosses++;
+		}
+		aggregation.losses++;
+
+		updateWinRatios(aggregation);
+
+		if (isNewAggregation) {
+			this.added('users', aggregation._id, aggregation);
+		} else {
+			this.changed('users', aggregation._id, aggregation);
+		}
+	}, this);
+	var subtractLoss = _.bind(function(document) {
+		var existingAggregation = _(userStats).findWhere({_id: document.loser_id});
+
+		if (!existingAggregation) {
+			// do nothing
+			// this probably indicates a bug if the code gets here
+			return;
+		}
+
+		if (aMonthAgo.isBefore(document.date)) {
+			existingAggregation.monthLosses--;
+			existingAggregation.quarterLosses--;
+			existingAggregation.yearLosses--;
+		} else if (aQuarterAgo.isBefore(document.date)) {
+			existingAggregation.quarterLosses--;
+			existingAggregation.yearLosses--;
+		} else if (aYearAgo.isBefore(document.date)) {
+			existingAggregation.yearLosses--;
+		}
+		existingAggregation.losses--;
+
+		updateWinRatios(existingAggregation);
+
 		this.changed('users', existingAggregation._id, existingAggregation);
 	}, this);
 
@@ -135,6 +200,7 @@ Meteor.publish('user-stats', function() {
     var liveQuery = Matches.find({}).observe({
 		added: function(document) {
 			addWin(document);
+			addLoss(document);
 		},
 		changed: function(newDocument, oldDocument) {
 			var changed = function(prop) {
@@ -145,9 +211,14 @@ Meteor.publish('user-stats', function() {
 				subtractWin(oldDocument);
 				addWin(newDocument);
 			}
+			if (changed('loser_id') || changed('date')) {
+				subtractLoss(oldDocument);
+				addLoss(newDocument);
+			}
 		},
 		removed: function(document) {
 			subtractWin(document);
+			subtractLoss(document);
 		}
 	});
 
