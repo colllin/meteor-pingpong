@@ -43,8 +43,17 @@ Meteor.methods({
         if (!this.userId)
             throw new Meteor.Error(403, "You must be logged in");
 
+        if (this.userId != options.winner_id && this.userId != options.loser_id)
+            throw new Meteor.Error(403, "You can't create a match you didn't participate in.");
+
+        if (!Meteor.users.findOne(options.winner_id))
+            throw new Meteor.Error(422, "Winner not found in users database.");
+
+        if (!Meteor.users.findOne(options.loser_id))
+            throw new Meteor.Error(422, "Loser not found in users database.");
+
         if (options.winner_score < options.loser_score)
-            throw new Meteor.Error(422, "Loser has more points than the winner? This is a bug. Contact support.");
+            throw new Meteor.Error(422, "Loser has more points than the winner? This is a bug. Contact your friendly developer.");
 
         if (options.winner_score > 100)
             throw new Meteor.Error(422, "Max game score is 100. Cheater.");
