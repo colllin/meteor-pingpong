@@ -40,12 +40,23 @@ Meteor.methods({
         //     _id: Match.Optional(NonEmptyString)
         // });
 
-        // if (options.title.length > 100)
-        //     throw new Meteor.Error(413, "Title too long");
-        // if (options.description.length > 1000)
-        //     throw new Meteor.Error(413, "Description too long");
         if (!this.userId)
             throw new Meteor.Error(403, "You must be logged in");
+
+        if (options.winner_score < options.loser_score)
+            throw new Meteor.Error(422, "Loser has more points than the winner? This is a bug. Contact support.");
+
+        if (options.winner_score > 100)
+            throw new Meteor.Error(422, "Max game score is 100. Cheater.");
+
+        if (options.loser_score > 100)
+            throw new Meteor.Error(422, "Max game score is 100. Cheater.");
+
+        if (options.winner_score < 0)
+            throw new Meteor.Error(422, "Negative points defies the laws of physics.");
+
+        if (options.loser_score < 0)
+            throw new Meteor.Error(422, "Negative points defies the laws of physics.");
 
         return Matches.insert({
             _id: options._id,

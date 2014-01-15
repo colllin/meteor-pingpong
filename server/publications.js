@@ -7,7 +7,7 @@ Meteor.publish('matches', function() {
 	return Matches.find({});
 });
 
-Meteor.publish('user-wins', function() {
+Meteor.publish('user-stats', function() {
 	// var self = this;
 	// check(roomId, String);
 	var initializing = true;
@@ -23,21 +23,35 @@ Meteor.publish('user-wins', function() {
     //     }
     // }];
 
-	// var matchWinsByUser = Matches.aggregate(aggregationQuery);
-	// _(matchWinsByUser).each(_.bind(function(aggregation) {
+	// var userStats = Matches.aggregate(aggregationQuery);
+	// _(userStats).each(_.bind(function(aggregation) {
 	// 	this.added('win-counts', aggregation._id, aggregation);
 	// }, this));
 	// initializing = false;
 	// this.ready();
 
-	var matchWinsByUser = [];
+	var userStats = [];
 	var aYearAgo = moment().utc().subtract({years: 1});
 	var aQuarterAgo = moment().utc().subtract({months: 3});
 	var aMonthAgo = moment().utc().subtract({months: 1});
 
-	var addWin = _.bind(function(document) {
+	var defaultAggregation = {
+		wins: 0,
+		yearWins: 0,
+		quarterWins: 0,
+		monthWins: 0,
+		losses: 0,
+		yearLosses: 0,
+		quarterLosses: 0,
+		monthLosses: 0,
+		winRatio: 1,
+		yearWinRatio: 1,
+		quarterWinRatio: 1,
+		monthWinRatio: 1
+	};
 
-		var aggregation = _(matchWinsByUser).findWhere({_id: document.winner_id});
+	var addWin = _.bind(function(document) {
+		var aggregation = _(userStats).findWhere({_id: document.winner_id});
 		var isNewAggregation = false;
 
 		if (!aggregation) {
@@ -49,7 +63,7 @@ Meteor.publish('user-wins', function() {
 				quarterWins: 0,
 				monthWins: 0
 			};
-			matchWinsByUser.push(aggregation);
+			userStats.push(aggregation);
 		}
 
 		if (aMonthAgo.isBefore(document.date)) {
@@ -69,10 +83,9 @@ Meteor.publish('user-wins', function() {
 		} else {
 			this.changed('users', aggregation._id, aggregation);
 		}
-
 	}, this);
 	var subtractWin = _.bind(function(document) {
-		var existingAggregation = _(matchWinsByUser).findWhere({_id: document.winner_id});
+		var existingAggregation = _(userStats).findWhere({_id: document.winner_id});
 
 		if (!existingAggregation) {
 			// do nothing
@@ -93,19 +106,22 @@ Meteor.publish('user-wins', function() {
 		existingAggregation.wins--;
 
 		this.changed('users', existingAggregation._id, existingAggregation);
-
 	}, this);
 
 	// wins depend on matches, so observe changes to the matches collection
-    var handle = Matches.find({}).observe({
+    var liveQuery = Matches.find({}).observe({
 		added: function(document) {
 			addWin(document);
 		},
 		changed: function(newDocument, oldDocument) {
-			if (newDocument.winner_id == oldDocument.winner_id) return;
+			var changed = function(prop) {
+				return newDocument[prop] != oldDocument[prop];
+			};
 
-			subtractWin(oldDocument);
-			addWin(newDocument);
+			if (changed('winner_id') || changed('date')) {
+				subtractWin(oldDocument);
+				addWin(newDocument);
+			}
 		},
 		removed: function(document) {
 			subtractWin(document);
@@ -121,7 +137,7 @@ Meteor.publish('user-wins', function() {
 	// Stopping a subscription automatically takes
 	// care of sending the client any removed messages.
 	this.onStop(function () {
-		handle.stop();
+		liveQuery.stop();
 	});
 });
 
