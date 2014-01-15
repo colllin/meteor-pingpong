@@ -91,36 +91,62 @@ Router.map(function() {
 });
 
 
+
 Template.feed.matches = function() {
     return Matches.find({}, {sort: {date: -1}});
 };
 
-Template.feed.events({
-    'click input' : function() {
-        // template data, if any, is available in 'this'
-        if (typeof console !== 'undefined')
-            console.log("You pressed the button");
-    }
-});
 
 
 Template.feedMatch.calendar = function() {
     return moment.utc(this.date).local().calendar();
 };
-
 Template.feedMatch.iso_date = function() {
     return moment.utc(this.date).local().toISOString();
 };
-
 Template.feedMatch.winnerName = function() {
-    var winner = Meteor.users.findOne(this.winner_id);
-    return winner ? winner.username || winner.emails[0].address : 'someone';
-};
+    if (this.winner_id == Meteor.userId()) return 'You';
 
-Template.feedMatch.loserName = function() {
-    var loser = Meteor.users.findOne(this.loser_id);
-    return loser ? loser.username || loser.emails[0].address : 'someone';
+    var winner = Meteor.users.findOne(this.winner_id);
+    return winner ? '@' + (winner.username || 'unknown') : 'someone';
 };
+Template.feedMatch.loserName = function() {
+    if (this.loser_id == Meteor.userId()) return 'You';
+
+    var loser = Meteor.users.findOne(this.loser_id);
+    return loser ? '@' + (loser.username || 'unknown') : 'someone';
+};
+Template.feedMatch.unconfirmed = function() {
+    return !this.confirmed;
+};
+Template.feedMatch.denied = function() {
+    return this.confirmed == -1;
+};
+Template.feedMatch.unconfirmedStyle = function() {
+    return this.confirmed == 1 ? '' : 'opacity:0.5;';
+};
+Template.feedMatch.canConfirm = function() {
+    return Meteor.userId() && !this.confirmed && this.creator_id != Meteor.userId();
+};
+Template.feedMatch.events({
+    'click .js-confirm-match' : function() {
+        // template data, if any, is available in 'this'
+        Meteor.call('confirmMatch', this._id);
+    },
+    'click .js-deny-match' : function() {
+        // template data, if any, is available in 'this'
+        Meteor.call('denyMatch', this._id);
+    },
+    'click .js-unconfirm-match' : function() {
+        // template data, if any, is available in 'this'
+        Meteor.call('unconfirmMatch', this._id);
+    },
+    'click .js-destroy-match' : function() {
+        // template data, if any, is available in 'this'
+        Meteor.call('destroyMatch', this._id);
+    }
+});
+
 
 
 var draftFromMatch = function(match) {

@@ -7,26 +7,26 @@
 
 <template name="layout">
 	<nav class="navbar navbar-defaultt" role="navigation">
-		<!-- Brand and toggle get grouped for better mobile display -->
-		<div class="navbar-header">
+		<div class="navbar-headerr">
 			<span class="navbar-brand" href="/">
 				<span class="glyphicon glyphicon-search"></span>
 				rematch
 		    </span>
+
+		    <!-- need .pull-right to keep it floated on mobile (< 768) -->
+			<ul class="nav navbar-nav navbar-right pull-right">
+				{{loginButtons align="right"}}
+			</ul>
+
+			{{#if currentUser}}
+				<div class="text-center">
+					<a class="btn navbar-btn btn-default" href="/new">
+						<span class="glyphicon glyphicon-plus"></span>
+						Record a Match
+					</a>
+				</div>
+			{{/if}}
 		</div>
-
-		<ul class="nav navbar-nav navbar-right">
-			{{loginButtons align="right"}}
-		</ul>
-
-		{{#if currentUser}}
-			<div class="text-center">
-				<a class="btn navbar-btn btn-default" href="/new">
-					<span class="glyphicon glyphicon-plus"></span>
-					Record a Match
-				</a>
-			</div>
-		{{/if}}
 	</nav>
 
 	{{yield}}
@@ -52,15 +52,51 @@
 </template>
 
 <template name="feedMatch">
-    <div style="background:transparent; border-bottom:2px dashed; padding: 20px 0; font-size: 20px;">
+	<!-- Disclaimer: Professional driver, closed course. (inline styles are bad.) -->
+    <div style="background:transparent; border-bottom:2px dashed; padding: 20px 0; font-size: 20px; {{unconfirmedStyle}}; white-space:nowrap; text-overflow:ellipsis;">
 
-        @{{winnerName}} crushed @{{loserName}}
         <strong class="pull-right">
             {{winner_score}}&ndash;{{loser_score}}
         </strong>
 
-        <br>
-        <span class="js-time-ago text-muted" title="{{calendar}}" data-livestampp="{{iso_date}}">{{calendar}}</span>
+        {{winnerName}} crushed {{loserName}}
+
+        <div>
+	        {{#if unconfirmed}}
+		        <div class="pull-right">
+		        	{{#if canConfirm}}
+			        	<a class="js-confirm-match btn btn-primary btn-xs" href="javascript://" style="margin-left:5px;">
+			        		confirm?
+			        	</a>
+			        	<a class="js-deny-match btn btn-default btn-xs" href="javascript://" style="margin-left:5px;">
+			        		deny?
+			        	</a>
+			        {{else}}
+			        	<span class="btn btn-default btn-xs">
+			        		unconfirmed
+			        	</span>
+			        	<a class="js-destroy-match btn btn-default btn-xs" href="javascript://" style="margin-left:5px;">
+			        		delete?
+			        	</a>
+		        	{{/if}}
+	        	</div>
+	    	{{/if}}
+	        {{#if denied}}
+	        	<div class="pull-right">
+		        	<span class="btn btn-danger btn-xs">
+		        		denied by opponent
+		        	</span>
+		        	<a class="js-unconfirm-match btn btn-default btn-xs" href="javascript://" style="margin-left:5px;">
+		        		retry?
+		        	</a>
+		        	<a class="js-destroy-match btn btn-default btn-xs" href="javascript://" style="margin-left:5px;">
+		        		delete?
+		        	</a>
+	        	</div>
+	        {{/if}}
+
+	        <span class="js-time-ago text-muted" title="{{calendar}}" data-livestampp="{{iso_date}}">{{calendar}}</span>
+        </div>
 
     </div>
 </template>

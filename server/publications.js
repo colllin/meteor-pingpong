@@ -4,7 +4,30 @@ Meteor.publish('allUsers', function () {
 });
 
 Meteor.publish('matches', function() {
-	return Matches.find({});
+	return Matches.find({
+		confirmed: 1
+	});
+});
+
+Meteor.publish('unconfirmedMatches', function() {
+	return Matches.find({
+		$or: [{
+			winner_id: this.userId,
+			confirmed: 0
+		}, {
+			loser_id: this.userId,
+			confirmed: 0
+		}, {
+			winner_id: this.userId,
+			confirmed: {$exists: false}
+		}, {
+			loser_id: this.userId,
+			confirmed: {$exists: false}
+		}, {
+			creator_id: this.userId,
+			confirmed: -1
+		}]
+	});
 });
 
 Meteor.publish('user-stats', function() {

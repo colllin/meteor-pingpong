@@ -5,6 +5,8 @@ Matches.allow({
         return false; // no cowboy inserts -- use createMatch method
     },
     update: function(userId, match, fields, modifier) {
+        return false;
+
         if (userId !== match.winner && userId !== match.loser)
             return false;
 
@@ -74,7 +76,88 @@ Meteor.methods({
             winner_score: options.winner_score,
             loser_id: options.loser_id,
             loser_score: options.loser_score,
-            date: options.date
+            date: options.date,
+            confirmed: 0
         });
+    },
+    confirmMatch: function(matchId) {
+        var match = Matches.findOne(matchId);
+
+        if (!match)
+            throw new Meteor.Error(404, "Couldn't find that Match in the database.");
+
+        if (!this.userId)
+            throw new Meteor.Error(403, "You must be logged in");
+
+        if (this.userId != match.winner_id && this.userId != match.loser_id)
+            throw new Meteor.Error(403, "You can't confirm a match you didn't participate in.");
+
+        if (this.userId == match.creator_id)
+            throw new Meteor.Error(403, "You can't confirm a match you created.");
+
+        Matches.update(match._id, {
+            $set: {
+                confirmed: 1
+            }
+        });
+    },
+    denyMatch: function(matchId) {
+        var match = Matches.findOne(matchId);
+
+        if (!match)
+            throw new Meteor.Error(404, "Couldn't find that Match in the database.");
+
+        if (!this.userId)
+            throw new Meteor.Error(403, "You must be logged in");
+
+        if (this.userId != match.winner_id && this.userId != match.loser_id)
+            throw new Meteor.Error(403, "You can't confirm a match you didn't participate in.");
+
+        if (this.userId == match.creator_id)
+            throw new Meteor.Error(403, "You can't confirm a match you created.");
+
+        Matches.update(match._id, {
+            $set: {
+                confirmed: -1
+            }
+        });
+    },
+    unconfirmMatch: function(matchId) {
+        var match = Matches.findOne(matchId);
+
+        if (!match)
+            throw new Meteor.Error(404, "Couldn't find that Match in the database.");
+
+        if (!this.userId)
+            throw new Meteor.Error(403, "You must be logged in");
+
+        if (this.userId != match.winner_id && this.userId != match.loser_id)
+            throw new Meteor.Error(403, "You can't unconfirm a match you didn't participate in.");
+
+        if (this.userId != match.creator_id)
+            throw new Meteor.Error(403, "You can't unconfirm a match you didn't create.");
+
+        Matches.update(match._id, {
+            $set: {
+                confirmed: 0
+            }
+        });
+    },
+    destroyMatch: function(matchId) {
+        var match = Matches.findOne(matchId);
+
+        if (!match)
+            throw new Meteor.Error(404, "Couldn't find that Match in the database.");
+
+        if (!this.userId)
+            throw new Meteor.Error(403, "You must be logged in");
+
+        if (this.userId != match.creator_id)
+            throw new Meteor.Error(403, "You can't destroy a match you didn't create.");
+
+        if (match.confirmed == 1)
+            throw new Meteor.Error(403, "You can't destroy a match that's already confirmed.");
+
+        Matches.remove(match._id);
     }
 });
