@@ -128,6 +128,9 @@ Template.feedMatch.unconfirmedStyle = function() {
 Template.feedMatch.canConfirm = function() {
     return Meteor.userId() && !this.confirmed && this.creator_id != Meteor.userId();
 };
+Template.feedMatch.currentUserStyle = function() {
+    return (Meteor.userId() == this.winner_id || Meteor.userId() == this.loser_id) ? 'background:#fcffe6;' : '';
+};
 Template.feedMatch.events({
     'click .js-confirm-match' : function() {
         // template data, if any, is available in 'this'
@@ -389,6 +392,9 @@ Template.leaderboardUser.metricValue = function() {
     var metricKey = Session.get('leaderboardMetric');
     var metric = getMetric(metricKey);
     return eval(metric.userValue);
+};
+Template.leaderboardUser.currentUserStyle = function() {
+    return Meteor.userId() == this._id ? 'background:#fcffe6;' : '';
 };
 
 

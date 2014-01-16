@@ -54,7 +54,7 @@
 
 <template name="feedMatch">
 	<!-- Disclaimer: Professional driver, closed course. (inline styles are bad.) -->
-    <div style="background:transparent; border-bottom:2px dashed; padding: 20px 0; font-size: 20px; {{unconfirmedStyle}}; white-space:nowrap; text-overflow:ellipsis;">
+    <div style="background:transparent; border-bottom:2px dashed; padding: 20px 0; font-size: 20px; {{unconfirmedStyle}}; white-space:nowrap; text-overflow:ellipsis; {{currentUserStyle}};">
 
         <strong class="pull-right">
             {{winner_score}}&ndash;{{loser_score}}
@@ -113,7 +113,7 @@
 					<small><a href="/">Feed</a></small>
 				</h1>
 
-				<div class="text-center">
+				<div class="text-center" style="margin-bottom:20px;">
 					<div class="btn-group dropdown">
 						<a href="javascript://" data-toggle="dropdown" class="btn btn-default">
 							{{selectedMetricTitle}}
@@ -141,7 +141,7 @@
 </template>
 
 <template name="leaderboardUser">
-    <div style="background:transparent; border-bottom:2px dashed; padding: 20px 0; font-size: 20px;">
+    <div style="background:transparent; border-bottom:2px dashed; padding: 20px 0; font-size: 20px; {{currentUserStyle}};">
 
         @{{username}}
         <strong class="pull-right">
