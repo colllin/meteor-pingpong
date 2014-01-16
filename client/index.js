@@ -363,7 +363,7 @@ Template.leaderboard.leaders = function() {
     var metricKey = Session.get('leaderboardMetric');
     var metric = getMetric(metricKey);
     sort[metric.userOrder] = -1;
-    return Meteor.users.find({}, {sort: {wins: -1}}).fetch();
+    return Meteor.users.find({}, {sort: sort}).fetch();
 };
 Template.leaderboard.metrics = function() {
     return metrics;

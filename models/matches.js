@@ -48,6 +48,9 @@ Meteor.methods({
         if (this.userId != options.winner_id && this.userId != options.loser_id)
             throw new Meteor.Error(403, "You can't create a match you didn't participate in.");
 
+        if (options.winner_id == options.loser_id)
+            throw new Meteor.Error(403, "You can't play a match against yourself. Unless you're schizophrenic. In that case, please have both players contact support.");
+
         if (!Meteor.users.findOne(options.winner_id))
             throw new Meteor.Error(422, "Winner not found in users database.");
 
