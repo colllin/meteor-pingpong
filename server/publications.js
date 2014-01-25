@@ -88,6 +88,13 @@ Meteor.publish('user-stats', function() {
 		aggregation.monthWinRatio = aggregation.monthWins / aggregation.monthLosses;
 	};
 
+	var updatePointRatios = function(aggregation) {
+		aggregation.pointsRatio = aggregation.points / aggregation.pointsAgainst;
+		aggregation.yearPointsRatio = aggregation.yearPoints / aggregation.yearPointsAgainst;
+		aggregation.quarterPointsRatio = aggregation.quarterPoints / aggregation.quarterPointsAgainst;
+		aggregation.monthPointsRatio = aggregation.monthPoints / aggregation.monthPointsAgainst;
+	};
+
 	var addWin = _.bind(function(document) {
 		var aggregation = _(userStats).findWhere({_id: document.winner_id});
 		var isNewAggregation = false;
@@ -133,6 +140,7 @@ Meteor.publish('user-stats', function() {
 		aggregation.pointsAgainst += document.loser_score;
 
 		updateWinRatios(aggregation);
+		updatePointRatios(aggregation);
 
 		if (isNewAggregation) {
 			this.added('users', aggregation._id, aggregation);
@@ -180,6 +188,7 @@ Meteor.publish('user-stats', function() {
 		existingAggregation.pointsAgainst -= document.loser_score;
 
 		updateWinRatios(existingAggregation);
+		updatePointRatios(existingAggregation);
 
 		this.changed('users', existingAggregation._id, existingAggregation);
 	}, this);
@@ -227,6 +236,7 @@ Meteor.publish('user-stats', function() {
 		aggregation.pointsAgainst += document.winner_score;
 
 		updateWinRatios(aggregation);
+		updatePointRatios(aggregation);
 
 		if (isNewAggregation) {
 			this.added('users', aggregation._id, aggregation);
@@ -274,6 +284,7 @@ Meteor.publish('user-stats', function() {
 		existingAggregation.pointsAgainst -= document.winner_score;
 
 		updateWinRatios(existingAggregation);
+		updatePointRatios(existingAggregation);
 
 		this.changed('users', existingAggregation._id, existingAggregation);
 	}, this);

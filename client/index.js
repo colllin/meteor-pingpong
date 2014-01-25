@@ -357,6 +357,10 @@ var metrics = [{
     heading: 'Points Against',
     userOrder: 'pointsAgainst',
     userValue: "'('+ this.pointsAgainst +' pts)'"
+}, {
+    heading: 'Points Record',
+    userOrder: 'pointsRatio',
+    userValue: "this.points +'-'+ this.pointsAgainst +' ('+ this.pointsRatio.toFixed(3) +')'"
 }];
 var getMetric = function(key) {
     // return the best match, or return a default metric
