@@ -70,7 +70,15 @@ Meteor.publish('user-stats', function() {
 		winRatio: 1,
 		yearWinRatio: 1,
 		quarterWinRatio: 1,
-		monthWinRatio: 1
+		monthWinRatio: 1,
+		points: 0,
+		yearPoints: 0,
+		quarterPoints: 0,
+		monthPoints: 0,
+		pointsAgainst: 0,
+		yearPointsAgainst: 0,
+		quarterPointsAgainst: 0,
+		monthPointsAgainst: 0
 	};
 
 	var updateWinRatios = function(aggregation) {
@@ -96,13 +104,33 @@ Meteor.publish('user-stats', function() {
 			aggregation.monthWins++;
 			aggregation.quarterWins++;
 			aggregation.yearWins++;
+
+			aggregation.monthPoints += document.winner_score;
+			aggregation.quarterPoints += document.winner_score;
+			aggregation.yearPoints += document.winner_score;
+
+			aggregation.monthPointsAgainst += document.loser_score;
+			aggregation.quarterPointsAgainst += document.loser_score;
+			aggregation.yearPointsAgainst += document.loser_score;
 		} else if (aQuarterAgo.isBefore(document.date)) {
 			aggregation.quarterWins++;
 			aggregation.yearWins++;
+
+			aggregation.quarterPoints += document.winner_score;
+			aggregation.yearPoints += document.winner_score;
+
+			aggregation.quarterPointsAgainst += document.loser_score;
+			aggregation.yearPointsAgainst += document.loser_score;
 		} else if (aYearAgo.isBefore(document.date)) {
 			aggregation.yearWins++;
+
+			aggregation.yearPoints += document.winner_score;
+
+			aggregation.yearPointsAgainst += document.loser_score;
 		}
 		aggregation.wins++;
+		aggregation.points += document.winner_score;
+		aggregation.pointsAgainst += document.loser_score;
 
 		updateWinRatios(aggregation);
 
@@ -125,13 +153,31 @@ Meteor.publish('user-stats', function() {
 			existingAggregation.monthWins--;
 			existingAggregation.quarterWins--;
 			existingAggregation.yearWins--;
+
+			existingAggregation.monthPoints -= document.winner_score;
+			existingAggregation.quarterPoints -= document.winner_score;
+			existingAggregation.yearPoints -= document.winner_score;
+
+			existingAggregation.monthPointsAgainst -= document.loser_score;
+			existingAggregation.quarterPointsAgainst -= document.loser_score;
+			existingAggregation.yearPointsAgainst -= document.loser_score;
 		} else if (aQuarterAgo.isBefore(document.date)) {
 			existingAggregation.quarterWins--;
 			existingAggregation.yearWins--;
+
+			existingAggregation.quarterPoints -= document.winner_score;
+			existingAggregation.yearPoints -= document.winner_score;
+
+			existingAggregation.quarterPointsAgainst -= document.loser_score;
+			existingAggregation.yearPointsAgainst -= document.loser_score;
 		} else if (aYearAgo.isBefore(document.date)) {
 			existingAggregation.yearWins--;
+			existingAggregation.yearPoints -= document.winner_score;
+			existingAggregation.yearPointsAgainst -= document.loser_score;
 		}
 		existingAggregation.wins--;
+		existingAggregation.points -= document.winner_score;
+		existingAggregation.pointsAgainst -= document.loser_score;
 
 		updateWinRatios(existingAggregation);
 
@@ -154,13 +200,31 @@ Meteor.publish('user-stats', function() {
 			aggregation.monthLosses++;
 			aggregation.quarterLosses++;
 			aggregation.yearLosses++;
+
+			aggregation.monthPoints += document.loser_score;
+			aggregation.quarterPoints += document.loser_score;
+			aggregation.yearPoints += document.loser_score;
+
+			aggregation.monthPointsAgainst += document.winner_score;
+			aggregation.quarterPointsAgainst += document.winner_score;
+			aggregation.yearPointsAgainst += document.winner_score;
 		} else if (aQuarterAgo.isBefore(document.date)) {
 			aggregation.quarterLosses++;
 			aggregation.yearLosses++;
+
+			aggregation.quarterPoints += document.loser_score;
+			aggregation.yearPoints += document.loser_score;
+
+			aggregation.quarterPointsAgainst += document.winner_score;
+			aggregation.yearPointsAgainst += document.winner_score;
 		} else if (aYearAgo.isBefore(document.date)) {
 			aggregation.yearLosses++;
+			aggregation.yearPoints += document.loser_score;
+			aggregation.yearPointsAgainst += document.winner_score;
 		}
 		aggregation.losses++;
+		aggregation.points += document.loser_score;
+		aggregation.pointsAgainst += document.winner_score;
 
 		updateWinRatios(aggregation);
 
@@ -183,13 +247,31 @@ Meteor.publish('user-stats', function() {
 			existingAggregation.monthLosses--;
 			existingAggregation.quarterLosses--;
 			existingAggregation.yearLosses--;
+
+			existingAggregation.monthPoints -= document.loser_score;
+			existingAggregation.quarterPoints -= document.loser_score;
+			existingAggregation.yearPoints -= document.loser_score;
+
+			existingAggregation.monthPointsAgainst -= document.winner_score;
+			existingAggregation.quarterPointsAgainst -= document.winner_score;
+			existingAggregation.yearPointsAgainst -= document.winner_score;
 		} else if (aQuarterAgo.isBefore(document.date)) {
 			existingAggregation.quarterLosses--;
 			existingAggregation.yearLosses--;
+
+			existingAggregation.quarterPoints -= document.loser_score;
+			existingAggregation.yearPoints -= document.loser_score;
+
+			existingAggregation.quarterPointsAgainst -= document.winner_score;
+			existingAggregation.yearPointsAgainst -= document.winner_score;
 		} else if (aYearAgo.isBefore(document.date)) {
 			existingAggregation.yearLosses--;
+			existingAggregation.yearPoints -= document.loser_score;
+			existingAggregation.yearPointsAgainst -= document.winner_score;
 		}
 		existingAggregation.losses--;
+		existingAggregation.points -= document.loser_score;
+		existingAggregation.pointsAgainst -= document.winner_score;
 
 		updateWinRatios(existingAggregation);
 

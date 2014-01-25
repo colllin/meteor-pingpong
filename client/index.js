@@ -338,17 +338,25 @@ Template.selectUser.highlight = function(toHighlight, data) {
 
 
 var metrics = [{
-    heading: 'Win Leaders',
+    heading: 'Wins',
     userOrder: 'wins',
     userValue: "this.wins + ' wins'"
 }, {
-    heading: 'Loss Leaders',
+    heading: 'Losses',
     userOrder: 'losses',
     userValue: "this.losses + ' losses'"
 }, {
-    heading: 'Record Leaders',
+    heading: 'Record',
     userOrder: 'winRatio',
     userValue: "this.wins +'-'+ this.losses +' ('+ this.winRatio +')'"
+}, {
+    heading: 'Points Scored',
+    userOrder: 'points',
+    userValue: "this.points + ' pts'"
+}, {
+    heading: 'Points Against',
+    userOrder: 'pointsAgainst',
+    userValue: "'('+ this.pointsAgainst +' pts)'"
 }];
 var getMetric = function(key) {
     // return the best match, or return a default metric

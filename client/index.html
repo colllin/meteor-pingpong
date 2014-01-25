@@ -114,20 +114,12 @@
 				</h1>
 
 				<div class="text-center" style="margin-bottom:20px;">
-					<div class="btn-group dropdown">
-						<a href="javascript://" data-toggle="dropdown" class="btn btn-default">
-							{{selectedMetricTitle}}
-							<span class="caret"></span>
-						</a>
-						<ul class="dropdown-menu text-left pull-right">
-							{{#each metrics}}
-								<li class="{{maybeActiveMetricClass}}">
-									<a href="javascript://" class="js-select-metric" data-key="{{metricKey}}">
-										{{heading}}
-									</a>
-								</li>
-							{{/each}}
-						</ul>
+					<div class="btn-group btn-group-justified">
+						{{#each metrics}}
+							<a href="javascript://" class="btn btn-link js-select-metric {{maybeActiveMetricClass}}" data-key="{{metricKey}}">
+								{{heading}}
+							</a>
+						{{/each}}
 					</div>
 				</div>
 
