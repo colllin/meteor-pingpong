@@ -348,7 +348,7 @@ var metrics = [{
 }, {
     heading: 'Record',
     userOrder: 'winRatio',
-    userValue: "this.wins +'-'+ this.losses +' ('+ this.winRatio.toFixed(2) +')'"
+    userValue: "this.wins +'-'+ this.losses +' ('+ this.winRatio.toFixed(3) +')'"
 }, {
     heading: 'Points Scored',
     userOrder: 'points',
