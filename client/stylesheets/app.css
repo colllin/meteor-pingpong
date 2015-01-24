@@ -14,5 +14,5 @@ body {
 	color: #333;
 }
 .lt-ie9 body {
-	/*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fdd783', endColorstr='#d56c04',GradientType=1 ); /* IE6-8 fallback on horizontal gradient */*/
+	/*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fdd783', endColorstr='#d56c04',GradientType=1 ); /* IE6-8 fallback on horizontal gradient */
 }
